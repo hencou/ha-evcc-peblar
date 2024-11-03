@@ -188,6 +188,10 @@ automation:
           - input_boolean.ev_charging
         from: "off"
         to: "on"
+    conditions:
+      - condition: numeric_state
+        entity_id: input_number.charge_current_limit
+        below: 6000
     actions:
       - action: input_number.set_value
         target:
