@@ -274,6 +274,35 @@ chargers:
         password: {{your hass token}}
       jq: .state
       scale: 0.001
+    maxcurrentmilis: # set charger max current (mA), maxcurrent: MUST be defined too!
+      source: http
+      uri: http://{{your hass url}}:8123/api/services/input_number/set_value
+      method: POST
+      body: '{"entity_id": "input_number.charge_current_limit", "value": "{{ (mul .maxcurrent 1000) }}"}'
+      headers:
+      - content-type: application/json
+      auth:
+        type: bearer
+        password: {{your hass token}} 
+      jq: .state
+    Phases1p3p: # phase switching (1/3)
+      source: http
+      uri: http://{{your hass url}}:8123/api/services/input_boolean/{{if .enable}}turn_on{{else}}turn_off{{end}}
+      method: POST
+      body: '{"entity_id": "input_boolean.force_1phase"}'
+      headers:
+      - content-type: application/json
+      auth:
+        type: bearer
+        password: {{your hass token}} 
+      jq: .state
+    tos: true
+# #     features:
+# #       # no vehicle
+# #       - integrateddevice
+# #       # SoC as temperature
+# #       - heating
+# #     icon: ...
 
 # vehicle definitions
 # name can be freely chosen and is used as reference when assigning vehicle to loadpoint
@@ -343,14 +372,6 @@ vehicles:
 # #    limitsoc: # optional in-vehicle limit soc, read-only (%)
 # #      source: # plugin type
 # #      # ...
-# #     maxcurrentmilis: # set charger max current (mA), maxcurrent: MUST be defined too!
-# #       source: ...
-# #       # ...
-# #     Phases1p3p: # phase switching (1/3)
-# #       source: ...
-# #       # ...
-# #     #1p3p does no longer handle disable/enable. Use tos: true to confirm you understand the consequences
-# #     tos: true
 
 # site describes the EVU connection, PV and home battery
 site:
