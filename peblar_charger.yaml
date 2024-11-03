@@ -1,0 +1,160 @@
+#Key Configuration Elements:
+# REST Sensors: These sensors retrieve data from the API endpoints and display it in Home Assistant. Replace <local_ip> with your device’s IP address and <your_api_token> with the actual token.
+# REST Command: This allows you to change settings via the API, such as setting the charge current limit.
+# Input Number & Automation: This example uses an input_number to set the charge current limit and an automation that triggers the REST command when the value changes.
+#
+# Customization:
+# Modify the scan intervals as necessary.
+# Add more sensors or commands based on other available API endpoints.
+
+# Store the authorization token in secrets.yaml.
+
+rest:
+  # /// adjust here your local IP ///
+  - resource: http://192.168.178.177/api/wlac/v1/system
+    scan_interval: 5
+    headers:
+      Authorization: !secret peblar_token
+    sensor:
+      - name: "Charger Product Number"
+        value_template: "{{ value_json.ProductPn }}"
+      - name: "Charger Serial Number"
+        value_template: "{{ value_json.ProductSn }}"
+      - name: "Charger Firmware Version"
+        value_template: "{{ value_json.FirmwareVersion }}"
+      - name: "WLAN Signal Strength"
+        value_template: "{{ value_json.WlanSignalStrength }}"
+        unit_of_measurement: "dBm"
+      - name: "Cellular Signal Strength"
+        value_template: "{{ value_json.CellularSignalStrength }}"
+        unit_of_measurement: "dBm"
+      - name: "Charger Uptime"
+        value_template: "{{ value_json.Uptime }}"
+        unit_of_measurement: "s"
+      - name: "Phase Count"
+        value_template: "{{ value_json.PhaseCount }}"
+      - name: "Force 1 Phase Allowed"
+        value_template: "{{ value_json.Force1PhaseAllowed }}"
+      - name: "Active Error Codes"
+        value_template: "{{ value_json.ActiveErrorCodes }}"
+      - name: "Active Warning Codes"
+        value_template: "{{ value_json.ActiveWarningCodes }}"
+
+  # /// adjust here your Local IP ///
+  - resource: http://192.168.178.177/api/wlac/v1/evinterface
+    scan_interval: 5
+    headers:
+      Authorization: !secret peblar_token
+    sensor:
+      - name: "Control Pilot State"
+        value_template: "{{ value_json.CpState }}"
+      #- name: "Socket Lock State" ## not with fixed cable
+      #  value_template: "{{ value_json.LockState }}"
+      - name: "Charge Current Limit"
+        value_template: "{{ value_json.ChargeCurrentLimit }}"
+        unit_of_measurement: "mA"
+      - name: "Charge Current Limit Source"
+        value_template: "{{ value_json.ChargeCurrentLimitSource }}"
+      - name: "Charge Current Limit Actual"
+        value_template: "{{ value_json.ChargeCurrentLimitActual }}"
+        unit_of_measurement: "mA"
+      - name: "Force 1 Phase"
+        value_template: "{{ value_json.Force1Phase }}"
+
+  # /// adjust here your Local IP ///
+  - resource: http://192.168.178.177/api/wlac/v1/meter
+    scan_interval: 5
+    headers:
+      Authorization: !secret peblar_token
+    sensor:
+      - name: "Current Phase 1"
+        value_template: "{{ value_json.CurrentPhase1 }}"
+        unit_of_measurement: "mA"
+      - name: "Current Phase 2"
+        value_template: "{{ value_json.CurrentPhase2 }}"
+        unit_of_measurement: "mA"
+      - name: "Current Phase 3"
+        value_template: "{{ value_json.CurrentPhase3 }}"
+        unit_of_measurement: "mA"
+      - name: "Voltage Phase 1"
+        value_template: "{{ value_json.VoltagePhase1 }}"
+        unit_of_measurement: "V"
+      - name: "Voltage Phase 2"
+        value_template: "{{ value_json.VoltagePhase2 }}"
+        unit_of_measurement: "V"
+      - name: "Voltage Phase 3"
+        value_template: "{{ value_json.VoltagePhase3 }}"
+        unit_of_measurement: "V"
+      - name: "Power Phase 1"
+        value_template: "{{ value_json.PowerPhase1 }}"
+        unit_of_measurement: "W"
+      - name: "Power Phase 2"
+        value_template: "{{ value_json.PowerPhase2 }}"
+        unit_of_measurement: "W"
+      - name: "Power Phase 3"
+        value_template: "{{ value_json.PowerPhase3 }}"
+        unit_of_measurement: "W"
+      - name: "Total Power"
+        value_template: "{{ value_json.PowerTotal }}"
+        unit_of_measurement: "W"
+      - name: "Peblar Total Energy"
+        value_template: "{{ value_json.EnergyTotal }}"
+        device_class: "energy"
+        unit_of_measurement: "Wh"
+        state_class: "total"
+      - name: "Peblar Session Energy"
+        value_template: "{{ value_json.EnergySession }}"
+        unit_of_measurement: "Wh"
+        state_class: "total_increasing"
+        device_class: "energy"
+
+# /// adjust here your Local IP ///
+rest_command:
+  set_charge_current_limit:
+    url: "http://192.168.178.177/api/wlac/v1/evinterface"
+    method: patch
+    headers:
+      Authorization: !secret peblar_token
+    content_type: "application/json"
+    payload: '{"ChargeCurrentLimit": {{ states("input_number.charge_current_limit") }} }'
+  
+  set_force_1phase:
+    url: "http://192.168.178.177/api/wlac/v1/evinterface"
+    method: patch
+    headers:
+      Authorization: !secret peblar_token
+    content_type: "application/json"
+    payload: '{"Force1Phase": {{ iif(is_state("input_boolean.force_1phase", "on"), "true", "false") }}}'
+
+# Define a template switch for starting and stopping charging
+switch:
+  - platform: template
+    switches:
+      ev_charging:
+        friendly_name: "EV Charging"
+        turn_on:
+          action: input_number.set_value
+          target:
+            entity_id: input_number.charge_current_limit
+          data:
+            value: 16000
+        turn_off:
+          action: input_number.set_value
+          target:
+            entity_id: input_number.charge_current_limit
+          data:
+            value: 0
+
+input_number:
+  charge_current_limit:
+    name: "Charge Current Limit"
+    initial: 0
+    min: 0
+    max: 16000
+    step: 1000
+
+input_boolean:
+  force_1phase:
+    name: "Force 1phase"
+    initial: false
+    
