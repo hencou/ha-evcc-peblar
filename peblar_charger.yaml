@@ -7,8 +7,10 @@
 # Modify the scan intervals as necessary.
 # Add more sensors or commands based on other available API endpoints.
 
+# Store the authorization token in secrets.yaml.
+
 rest:
-  # /// adjust here your local IP & API Token ///
+  # /// adjust here your local IP ///
   - resource: http://192.168.178.177/api/wlac/v1/system
     scan_interval: 5
     headers:
@@ -38,7 +40,7 @@ rest:
       - name: "Active Warning Codes"
         value_template: "{{ value_json.ActiveWarningCodes }}"
 
-  # /// adjust here your Local IP & API Token ///
+  # /// adjust here your Local IP ///
   - resource: http://192.168.178.177/api/wlac/v1/evinterface
     scan_interval: 5
     headers:
@@ -59,7 +61,7 @@ rest:
       - name: "Force 1 Phase"
         value_template: "{{ value_json.Force1Phase }}"
 
-  # /// adjust here you Local IP & API token ///
+  # /// adjust here you Local IP ///
   - resource: http://192.168.178.177/api/wlac/v1/meter
     scan_interval: 5
     headers:
@@ -107,7 +109,7 @@ rest:
         device_class: "energy"
 
 # Patch method to set the charge current limit and 1/3 phase switching
-# /// adjust here your local IP & API token
+# /// adjust here your local IP
 rest_command:
   set_charge_current_limit:
     url: "http://192.168.178.177/api/wlac/v1/evinterface"
