@@ -7,10 +7,8 @@
 # Modify the scan intervals as necessary.
 # Add more sensors or commands based on other available API endpoints.
 
-# Store the authorization token in secrets.yaml.
-
 rest:
-  # /// adjust here your local IP ///
+  # /// adjust here your local IP & API Token ///
   - resource: http://192.168.178.177/api/wlac/v1/system
     scan_interval: 5
     headers:
@@ -40,7 +38,7 @@ rest:
       - name: "Active Warning Codes"
         value_template: "{{ value_json.ActiveWarningCodes }}"
 
-  # /// adjust here your Local IP ///
+  # /// adjust here your Local IP & API Token ///
   - resource: http://192.168.178.177/api/wlac/v1/evinterface
     scan_interval: 5
     headers:
@@ -48,7 +46,7 @@ rest:
     sensor:
       - name: "Control Pilot State"
         value_template: "{{ value_json.CpState }}"
-      #- name: "Socket Lock State" ## not with fixed cable
+      #- name: "Socket Lock State" ## niet bij fixed kabel
       #  value_template: "{{ value_json.LockState }}"
       - name: "Charge Current Limit"
         value_template: "{{ value_json.ChargeCurrentLimit }}"
@@ -61,7 +59,7 @@ rest:
       - name: "Force 1 Phase"
         value_template: "{{ value_json.Force1Phase }}"
 
-  # /// adjust here your Local IP ///
+  # /// adjust here you Local IP & API token ///
   - resource: http://192.168.178.177/api/wlac/v1/meter
     scan_interval: 5
     headers:
@@ -108,7 +106,8 @@ rest:
         state_class: "total_increasing"
         device_class: "energy"
 
-# /// adjust here your Local IP ///
+# Patch method to set the charge current limit and 1/3 phase switching
+# /// adjust here your local IP & API token
 rest_command:
   set_charge_current_limit:
     url: "http://192.168.178.177/api/wlac/v1/evinterface"
@@ -126,25 +125,7 @@ rest_command:
     content_type: "application/json"
     payload: '{"Force1Phase": {{ iif(is_state("input_boolean.force_1phase", "on"), "true", "false") }}}'
 
-# Define a template switch for starting and stopping charging
-switch:
-  - platform: template
-    switches:
-      ev_charging:
-        friendly_name: "EV Charging"
-        turn_on:
-          action: input_number.set_value
-          target:
-            entity_id: input_number.charge_current_limit
-          data:
-            value: 16000
-        turn_off:
-          action: input_number.set_value
-          target:
-            entity_id: input_number.charge_current_limit
-          data:
-            value: 0
-
+# /// Input number for change charge limit
 input_number:
   charge_current_limit:
     name: "Charge Current Limit"
@@ -153,8 +134,61 @@ input_number:
     max: 16000
     step: 1000
 
+# /// Input booleans for 1/3 phase charging and on/off
 input_boolean:
   force_1phase:
     name: "Force 1phase"
     initial: false
-    
+  ev_charging:
+    name: "EV Charging"
+    initial: false
+
+# /// Automations to change related input values
+automation:
+  - alias: Peblar change Current Limit
+    triggers:
+      - entity_id: input_number.charge_current_limit
+        trigger: state
+    conditions: []
+    actions:
+      - action: rest_command.set_charge_current_limit
+    mode: single
+
+  - alias: Peblar on swithing
+    triggers:
+      - trigger: state
+        entity_id:
+          - input_boolean.ev_charging
+        from: "off"
+        to: "on"
+    actions:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.charge_current_limit
+        data:
+          value: 16000
+    mode: single
+
+  - alias: Peblar off swithing
+    triggers:
+      - trigger: state
+        entity_id:
+          - input_boolean.ev_charging
+        from: "on"
+        to: "off"
+    actions:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.charge_current_limit
+        data:
+          value: 0
+    mode: single
+
+  - alias: Peblar 1/3 phase swithing
+    triggers:
+      - trigger: state
+        entity_id:
+          - input_boolean.force_1phase
+    actions:
+      - action: rest_command.set_force_1phase
+    mode: single 
