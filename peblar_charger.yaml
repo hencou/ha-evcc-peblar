@@ -1,17 +1,15 @@
 #Key Configuration Elements:
-# REST Sensors: These sensors retrieve data from the API endpoints and display it in Home Assistant. Replace <local_ip> with your device’s IP address and <your_api_token> with the actual token.
+# REST Sensors: These sensors retrieve data from the API endpoints and display it in Home Assistant. Replace <local_ip> with your device’s IP address.
 # REST Command: This allows you to change settings via the API, such as setting the charge current limit.
-# Input Number & Automation: This example uses an input_number to set the charge current limit and an automation that triggers the REST command when the value changes.
 #
 # Customization:
 # Modify the scan intervals as necessary.
-# Add more sensors or commands based on other available API endpoints.
 
-# Store the authorization token in secrets.yaml.
+# Store the authorization token "peblar_token" in secrets.yaml.
 
 rest:
   # /// adjust here your local IP ///
-  - resource: http://192.168.178.177/api/wlac/v1/system
+  - resource: http://<local_ip>/api/wlac/v1/system
     scan_interval: 5
     headers:
       Authorization: !secret peblar_token
@@ -41,7 +39,7 @@ rest:
         value_template: "{{ value_json.ActiveWarningCodes }}"
 
   # /// adjust here your Local IP ///
-  - resource: http://192.168.178.177/api/wlac/v1/evinterface
+  - resource: http://<local_ip>/api/wlac/v1/evinterface
     scan_interval: 5
     headers:
       Authorization: !secret peblar_token
@@ -62,7 +60,7 @@ rest:
         value_template: "{{ value_json.Force1Phase }}"
 
   # /// adjust here you Local IP ///
-  - resource: http://192.168.178.177/api/wlac/v1/meter
+  - resource: http://<local_ip>/api/wlac/v1/meter
     scan_interval: 5
     headers:
       Authorization: !secret peblar_token
@@ -112,7 +110,7 @@ rest:
 # /// adjust here your local IP
 rest_command:
   set_charge_current_limit:
-    url: "http://192.168.178.177/api/wlac/v1/evinterface"
+    url: "http://<local_ip>/api/wlac/v1/evinterface"
     method: patch
     headers:
       Authorization: !secret peblar_token
@@ -120,7 +118,7 @@ rest_command:
     payload: '{"ChargeCurrentLimit": {{ states("input_number.charge_current_limit") }} }'
   
   set_force_1phase:
-    url: "http://192.168.178.177/api/wlac/v1/evinterface"
+    url: "http://<local_ip>/api/wlac/v1/evinterface"
     method: patch
     headers:
       Authorization: !secret peblar_token
