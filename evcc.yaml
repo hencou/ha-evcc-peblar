@@ -274,7 +274,7 @@ chargers:
         password: {{your hass token}}
       jq: .state
       scale: 0.001
-    maxcurrentmilis: # set charger max current (mA), maxcurrent: MUST be defined too!
+    maxcurrentmillis: # set charger max current (mA), maxcurrent: MUST be defined too!
       source: http
       uri: http://{{your hass url}}:8123/api/services/input_number/set_value
       method: POST
