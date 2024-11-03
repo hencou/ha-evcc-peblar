@@ -151,9 +151,36 @@ automation:
     triggers:
       - entity_id: input_number.charge_current_limit
         trigger: state
-    conditions: []
     actions:
       - action: rest_command.set_charge_current_limit
+        data: {}
+      - if:
+          - condition: numeric_state
+            entity_id: input_number.charge_current_limit
+            above: 2999
+            below: 6000
+        then:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.charge_current_limit
+            data:
+              value: 6000
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.ev_charging
+      - if:
+          - condition: numeric_state
+            entity_id: input_number.charge_current_limit
+            below: 3000
+        then:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.charge_current_limit
+            data:
+              value: 0
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.ev_charging
     mode: single
 
   - alias: Peblar on swithing
