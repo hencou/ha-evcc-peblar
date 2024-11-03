@@ -253,9 +253,9 @@ chargers:
       jq: .state | tonumber |  if . > 10 then true else false end
     enable: # set charger enabled state (true/false or 0/1)
       source: http
-      uri: http://{{your hass url}}:8123/api/services/switch/{{if .enable}}turn_on{{else}}turn_off{{end}}
+      uri: http://{{your hass url}}:8123/api/services/input_boolean/{{if .enable}}turn_on{{else}}turn_off{{end}}
       method: POST
-      body: '{"entity_id": "switch.ev_charging"}'
+      body: '{"entity_id": "input_boolean.ev_charging"}'
       headers:
       - content-type: application/json
       auth:
