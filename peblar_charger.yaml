@@ -223,3 +223,17 @@ automation:
     actions:
       - action: rest_command.set_force_1phase
     mode: single 
+
+  - alias: Set Peblar charge limit on 0 when no car connected
+    triggers:
+      - trigger: state
+        entity_id:
+          - sensor.control_pilot_state
+        to: State A
+    actions:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.charge_current_limit
+        data:
+          value: 0
+    mode: single
