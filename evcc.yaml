@@ -269,7 +269,7 @@ chargers:
       source: http
       uri: http://{{server}}:8123/api/services/input_number/set_value
       method: POST
-      body: '{"entity_id": "input_number.charge_current_limit", "value": "{{ (mul .maxcurrent 1000) }}"}' ## maxcurrent seems not to be called, tested with webhook.site
+      body: '{"entity_id": "input_number.charge_current_limit", "value": "{{ (mul .maxcurrent 1000) }}"}' ## maxcurrent seems not to be called, tested with webhook.site. should delivered an integer
       headers:
       - content-type: application/json
       auth:
@@ -282,7 +282,7 @@ chargers:
       source: http
       uri: http://{{server}}:8123/api/services/input_number/set_value
       method: POST
-      body: '{"entity_id": "input_number.charge_current_limit", "value": "{{ (mul .maxcurrentmillis 1000) }}"}' ## maxcurrentmillis is for certain reason no in millis so x 1000
+      body: '{"entity_id": "input_number.charge_current_limit", "value": "{{ (mul .maxcurrentmillis 1000) | int}}"}' ## maxcurrentmillis is given the current in amperes as a float
       headers:
       - content-type: application/json
       auth:
