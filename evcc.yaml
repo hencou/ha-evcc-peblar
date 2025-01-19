@@ -391,6 +391,14 @@ site:
   maxGridSupplyWhileBatteryCharging: 0 # ignore battery charging if AC consumption is above this value
   #smartCostLimit: 0 # set cost limit for automatic charging in PV mode
 
+# load management
+circuits:
+  - name: main # if there is only one circuit defined the name needs to be 'main'
+    title: 'main circuit' # name for the UI (not implemented in UI yet)
+    maxCurrent: 25 # 63A (optional)
+    maxPower: 17250 # 30kW (optional)
+    meter: grid1 # optional
+
 # loadpoint describes the charger, charge meter and connected vehicle
 loadpoints:
   - title: Garage # display name for UI
