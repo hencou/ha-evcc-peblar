@@ -5,7 +5,7 @@ network:
   # host is the hostname or IP address
   # if the host name contains a `.local` suffix, the name will be announced on MDNS
   # docker: MDNS announcements don't work. host must be set to the docker host's name.
-  host: homeserver.local
+  host: {{server}}
   # port is the listening port for UI and api
   # evcc will listen on all available interfaces
   port: 7070
@@ -61,7 +61,7 @@ meters:
       source: calc
       add:
       - source: http
-        uri: http://homeserver.local:8123/api/states/sensor.geleverd_vermogen
+        uri: http://{{server}}:8123/api/states/sensor.geleverd_vermogen
         method: GET
         headers:
         - content-type: application/json
@@ -71,7 +71,7 @@ meters:
         jq: .state
         scale: 1000
       - source: http
-        uri: http://homeserver.local:8123/api/states/sensor.retour_vermogen
+        uri: http://{{server}}:8123/api/states/sensor.retour_vermogen
         method: GET
         headers:
         - content-type: application/json
@@ -84,7 +84,7 @@ meters:
       source: calc
       add:
       - source: http
-        uri: http://homeserver.local:8123/api/states/sensor.electriciteitsverbruik_piek
+        uri: http://{{server}}:8123/api/states/sensor.electriciteitsverbruik_piek
         method: GET
         headers:
         - content-type: application/json
@@ -93,7 +93,7 @@ meters:
           password: {{your token}} 
         jq: .state
       - source: http
-        uri: http://homeserver.local:8123/api/states/sensor.electriciteitsverbruik_dal
+        uri: http://{{server}}:8123/api/states/sensor.electriciteitsverbruik_dal
         method: GET
         headers:
         - content-type: application/json
@@ -103,7 +103,7 @@ meters:
         jq: .state
     currents:
     - source: http
-      uri: http://homeserver.local:8123/api/states/sensor.stroom_fase1
+      uri: http://{{server}}:8123/api/states/sensor.stroom_fase1
       method: GET
       headers:
       - content-type: application/json
@@ -112,7 +112,7 @@ meters:
         password: {{your token}} 
       jq: .state
     - source: http
-      uri: http://homeserver.local:8123/api/states/sensor.stroom_fase2
+      uri: http://{{server}}:8123/api/states/sensor.stroom_fase2
       method: GET
       headers:
       - content-type: application/json
@@ -121,7 +121,7 @@ meters:
         password: {{your token}} 
       jq: .state
     - source: http
-      uri: http://homeserver.local:8123/api/states/sensor.stroom_fase3
+      uri: http://{{server}}:8123/api/states/sensor.stroom_fase3
       method: GET
       headers:
       - content-type: application/json
@@ -133,7 +133,7 @@ meters:
     - source: calc
       add:
       - source: http
-        uri: http://homeserver.local:8123/api/states/sensor.geleverd_vermogen_fase1
+        uri: http://{{server}}:8123/api/states/sensor.geleverd_vermogen_fase1
         method: GET
         headers:
         - content-type: application/json
@@ -143,7 +143,7 @@ meters:
         jq: .state
         scale: 1000
       - source: http
-        uri: http://homeserver.local:8123/api/states/sensor.retour_vermogen_fase1
+        uri: http://{{server}}:8123/api/states/sensor.retour_vermogen_fase1
         method: GET
         headers:
         - content-type: application/json
@@ -155,7 +155,7 @@ meters:
     - source: calc
       add:
       - source: http
-        uri: http://homeserver.local:8123/api/states/sensor.geleverd_vermogen_fase2
+        uri: http://{{server}}:8123/api/states/sensor.geleverd_vermogen_fase2
         method: GET
         headers:
         - content-type: application/json
@@ -165,7 +165,7 @@ meters:
         jq: .state
         scale: 1000
       - source: http
-        uri: http://homeserver.local:8123/api/states/sensor.retour_vermogen_fase2
+        uri: http://{{server}}:8123/api/states/sensor.retour_vermogen_fase2
         method: GET
         headers:
         - content-type: application/json
@@ -177,7 +177,7 @@ meters:
     - source: calc
       add:
       - source: http
-        uri: http://homeserver.local:8123/api/states/sensor.geleverd_vermogen_fase3
+        uri: http://{{server}}:8123/api/states/sensor.geleverd_vermogen_fase3
         method: GET
         headers:
         - content-type: application/json
@@ -187,7 +187,7 @@ meters:
         jq: .state
         scale: 1000
       - source: http
-        uri: http://homeserver.local:8123/api/states/sensor.retour_vermogen_fase3
+        uri: http://{{server}}:8123/api/states/sensor.retour_vermogen_fase3
         method: GET
         headers:
         - content-type: application/json
@@ -200,7 +200,7 @@ meters:
     type: custom
     power:
       source: http
-      uri: http://homeserver.local:8123/api/states/sensor.hoymiles_pv_pv_power
+      uri: http://{{server}}:8123/api/states/sensor.hoymiles_pv_pv_power
       method: GET
       headers:
       - content-type: application/json
@@ -211,7 +211,7 @@ meters:
       scale: 1000
     energy:
       source: http
-      uri: http://homeserver.local:8123/api/states/sensor.hoymiles_pv_total_production
+      uri: http://{{server}}:8123/api/states/sensor.hoymiles_pv_total_production
       method: GET
       headers:
       - content-type: application/json
@@ -233,7 +233,7 @@ chargers:
     type: custom
     status: # charger status A..F
       source: http
-      uri: http://homeserver.local:8123/api/states/sensor.control_pilot_state
+      uri: http://{{server}}:8123/api/states/sensor.control_pilot_state
       method: GET
       headers:
       - content-type: application/json
@@ -244,7 +244,7 @@ chargers:
     
     enabled: # charger enabled state (true/false or 0/1)
       source: http
-      uri: http://homeserver.local:8123/api/states/sensor.total_power
+      uri: http://{{server}}:8123/api/states/sensor.total_power
       method: GET
       headers:
       - content-type: application/json
@@ -255,7 +255,7 @@ chargers:
     
     enable: # set charger enabled state (true/false or 0/1)
       source: http
-      uri: http://homeserver.local:8123/api/services/input_boolean/{{if .enable}}turn_on{{else}}turn_off{{end}}
+      uri: http://{{server}}:8123/api/services/input_boolean/{{if .enable}}turn_on{{else}}turn_off{{end}}
       method: POST
       body: '{"entity_id": "input_boolean.ev_charging"}'
       headers:
@@ -267,7 +267,7 @@ chargers:
 
     maxcurrent: # set charger max current (A)
       source: http
-      uri: http://homeserver.local:8123/api/services/input_number/set_value
+      uri: http://{{server}}:8123/api/services/input_number/set_value
       method: POST
       body: '{"entity_id": "input_number.charge_current_limit", "value": "{{ (mul .maxcurrent 1000) }}"}' ## maxcurrent seems not to be called, tested with webhook.site
       headers:
@@ -280,7 +280,7 @@ chargers:
 
     maxcurrentmillis: # set charger max current (mA), maxcurrent: MUST be defined too!
       source: http
-      uri: http://homeserver.local:8123/api/services/input_number/set_value
+      uri: http://{{server}}:8123/api/services/input_number/set_value
       method: POST
       body: '{"entity_id": "input_number.charge_current_limit", "value": "{{ (mul .maxcurrentmillis 1000) }}"}' ## maxcurrentmillis is for certain reason no in millis so x 1000
       headers:
@@ -289,10 +289,11 @@ chargers:
         type: bearer
         password: {{your token}} 
       jq: .state
+      scale: 0.001
 
     Phases1p3p: # phase switching (1/3)
       source: http
-      uri: http://homeserver.local:8123/api/services/input_boolean/{{if (1 | eq .phases)}}turn_on{{else}}turn_off{{end}}
+      uri: http://{{server}}:8123/api/services/input_boolean/{{if (1 | eq .phases)}}turn_on{{else}}turn_off{{end}}
       method: POST
       body: '{"entity_id": "input_boolean.force_1phase"}'
       headers:
@@ -328,7 +329,7 @@ vehicles:
     capacity: 87 # battery capacity (kWh)
     soc: # battery soc (%)
       source: http
-      uri: http://homeserver.local:8123/api/states/sensor.gns05l_batterij
+      uri: http://{{server}}:8123/api/states/sensor.gns05l_batterij
       method: GET
       headers:
       - content-type: application/json
@@ -341,7 +342,7 @@ vehicles:
 #      # ...
     range: # optional electric range (km)
       source: http
-      uri: http://homeserver.local:8123/api/states/sensor.gns05l_battery_autonomy
+      uri: http://{{server}}:8123/api/states/sensor.gns05l_battery_autonomy
       method: GET
       headers:
       - content-type: application/json
@@ -351,7 +352,7 @@ vehicles:
       jq: .state
     odometer: # optional odometer (km)
       source: http
-      uri: http://homeserver.local:8123/api/states/sensor.gns05l_kilometerstand
+      uri: http://{{server}}:8123/api/states/sensor.gns05l_kilometerstand
       method: GET
       headers:
       - content-type: application/json
@@ -361,7 +362,7 @@ vehicles:
       jq: .state
     climater: # optional climate status (true/false)
       source: http
-      uri: http://homeserver.local:8123/api/states/binary_sensor.gns05l_hvac
+      uri: http://{{server}}:8123/api/states/binary_sensor.gns05l_hvac
       method: GET
       headers:
       - content-type: application/json
