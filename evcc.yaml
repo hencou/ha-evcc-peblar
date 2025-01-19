@@ -402,6 +402,7 @@ circuits:
 # loadpoint describes the charger, charge meter and connected vehicle
 loadpoints:
   - title: Garage # display name for UI
+    circuit: main
     charger: charger1 # charger
     #meter: charge # charge meter
     mode: "pv" # alleen bij zonneenergie, of wanneer prijs onder ingesteld level //set default charge mode, use "off" to disable by default if charger is publicly available
